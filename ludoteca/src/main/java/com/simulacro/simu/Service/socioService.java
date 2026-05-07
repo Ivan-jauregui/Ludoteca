@@ -1,6 +1,8 @@
 package com.simulacro.simu.Service;
 
+import com.simulacro.simu.Dtos.request.SocioRequest;
 import com.simulacro.simu.exception.RecursoNoEncontradoException;
+import com.simulacro.simu.mapper.SocioMapper;
 import com.simulacro.simu.models.Socio;
 import com.simulacro.simu.repository.socioRepository;
 import com.simulacro.simu.validator.Group;
@@ -18,9 +20,12 @@ import java.util.Optional;
 @Service
 public class socioService {
     private final socioRepository repository;
+    private final SocioMapper mapper;
 
-    public Socio save(Socio s) {
-        return repository.save(s);
+    public Socio save(SocioRequest s) {
+
+        Socio nuevoSocio = mapper.toEntity(s);
+        return repository.save(nuevoSocio);
     }
 
     public Socio findById(Long id){
@@ -39,13 +44,12 @@ public class socioService {
 
     }
 
-    public Socio update(Socio s,Long id){
+    public Socio update(SocioRequest s,Long id){
         Socio socioBD=repository.findById(id) .
                 orElseThrow(()-> new RecursoNoEncontradoException("El socio no fue encontrado"));
         socioBD.setName(s.getName());
         socioBD.setDni(s.getDni());
         socioBD.setEmail(s.getEmail());
-        socioBD.setReservas(s.getReservas());
         socioBD.setActivo(s.getActivo());
         return repository.save(socioBD);
     }

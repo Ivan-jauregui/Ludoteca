@@ -7,5 +7,4 @@ import java.util.List;
 public class socioDTO {
     private String name;
     private String email;
-    private List<Reserva> reservas;
 }

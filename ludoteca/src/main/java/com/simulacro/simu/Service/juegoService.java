@@ -1,6 +1,9 @@
 package com.simulacro.simu.Service;
 
+import com.simulacro.simu.Dtos.JuegoDTO;
+import com.simulacro.simu.Dtos.request.JuegoRequest;
 import com.simulacro.simu.exception.RecursoNoEncontradoException;
+import com.simulacro.simu.mapper.JuegoMapper;
 import com.simulacro.simu.models.Juego;
 import com.simulacro.simu.models.Socio;
 import com.simulacro.simu.repository.juegoRepository;
@@ -18,18 +21,23 @@ import java.util.Optional;
 @AllArgsConstructor
 public class juegoService {
     private final juegoRepository repository;
+    private final JuegoMapper mapper;
 
-    public Juego save(Juego j) {
-        return repository.save(j);
+    public Juego save(JuegoRequest j) {
+        Juego nuevoJuego = mapper.toEntity(j);
+        return repository.save(nuevoJuego);
     }
 
-    public Juego findById(Long id){
-        return repository.findById(id).
+    public JuegoDTO findById(Long id){
+        Juego j =  repository.findById(id).
                 orElseThrow(()-> new RecursoNoEncontradoException("El juego no fue encontrado"));
+        return mapper.toDto(j);
     }
 
-    public List<Juego> findAll(){
-        return repository.findAll();
+    public List<JuegoDTO> findAll(){
+        return repository.findAll().stream()
+                .map(mapper::toDto)
+                .toList();
     }
 
     public void deleteById(Long id){
@@ -40,7 +48,7 @@ public class juegoService {
 
     }
 
-    public Juego update(Juego j,Long id){
+    public Juego update(JuegoRequest j,Long id){
         Juego juegoBD=repository.findById(id) .
                 orElseThrow(()-> new RecursoNoEncontradoException("El juego no fue encontrado"));
         juegoBD.setNombre(j.getNombre());

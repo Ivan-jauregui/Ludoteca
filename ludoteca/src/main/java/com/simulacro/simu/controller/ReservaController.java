@@ -1,5 +1,7 @@
 package com.simulacro.simu.controller;
 
+import com.simulacro.simu.Dtos.request.ReservaRequest;
+import com.simulacro.simu.Dtos.reservaDTO;
 import com.simulacro.simu.Service.reservaService;
 import com.simulacro.simu.Service.socioService;
 import com.simulacro.simu.models.Reserva;
@@ -21,18 +23,18 @@ public class ReservaController {
     private final reservaService service;
 
     @PostMapping()
-    public ResponseEntity<Reserva> save(@Valid @Validated({Group.Crear.class,Group.Actualizar.class})@RequestBody Reserva r){
+    public ResponseEntity<Reserva> save(@Valid @Validated({Group.Crear.class,Group.Actualizar.class})@RequestBody ReservaRequest r){
         return  ResponseEntity.status(HttpStatus.CREATED).body(service.save(r));
     }
 
 
     @GetMapping("/{id}")
-    public Reserva findById(@PathVariable Long id){
+    public reservaDTO findById(@PathVariable Long id){
         return service.findById(id);
     }
 
     @GetMapping()
-    public ResponseEntity<List<Reserva>> findAll(){
+    public ResponseEntity<List<reservaDTO>> findAll(){
         return ResponseEntity.ok(service.findAll());
     }
 
@@ -43,7 +45,7 @@ public class ReservaController {
     }
 
     @PutMapping("/{id}")
-    public Reserva update(@Validated(Group.Actualizar.class) @RequestBody Reserva r,@RequestParam Long id){
+    public Reserva update(@Validated(Group.Actualizar.class) @RequestBody ReservaRequest r, @RequestParam Long id){
         return service.save(r);
     }
 }

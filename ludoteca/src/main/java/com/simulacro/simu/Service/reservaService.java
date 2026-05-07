@@ -1,7 +1,10 @@
 package com.simulacro.simu.Service;
 
+import com.simulacro.simu.Dtos.request.ReservaRequest;
+import com.simulacro.simu.Dtos.reservaDTO;
 import com.simulacro.simu.exception.RecursoNoEncontradoException;
 import com.simulacro.simu.exception.ReglaNegocioException;
+import com.simulacro.simu.mapper.ReservaMapper;
 import com.simulacro.simu.models.Juego;
 import com.simulacro.simu.models.Reserva;
 import com.simulacro.simu.models.Socio;
@@ -12,7 +15,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -20,33 +22,42 @@ public class reservaService {
     private final reservaRepository repository;
     private final socioRepository socioRepository;
     private final juegoRepository juegoRepository;
+    private final ReservaMapper mapper;
 
-    public Reserva save(Reserva r) {
-        Socio socio = socioRepository.findById(r.getSocio().getId())
+    public Reserva save(ReservaRequest r) {
+        Socio socio = socioRepository.findById(r.getSocioId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("El socio no existe"));
 
         // Buscamos y validamos al juego
-        Juego juego = juegoRepository.findById(r.getJuego().getId())
+        Juego juego = juegoRepository.findById(r.getJuegoId())
                 .orElseThrow(() -> new RecursoNoEncontradoException("El juego no existe"));
 
         if(!socio.getActivo() && !juego.getActivo()){
             throw new ReglaNegocioException("No se puede realizar la reserva: El socio o el juego están inactivos");
-        } else if (r.getCantidad()>r.getJuego().getStock()) {
+        } else if (r.getCantidad() > juego.getStock()) {
             throw new ReglaNegocioException("Stock insuficiente ");
         }
-        juego.setStock(r.getJuego().getStock()- r.getCantidad());
+
+        juego.setStock(juego.getStock() - r.getCantidad());
         juegoRepository.save(juego);
 
-        return repository.save(r);
+
+
+        Reserva nuevaReserva = mapper.toEntity(r);
+
+        return repository.save(nuevaReserva);
     }
 
-    public Reserva findById(Long id){
-        return repository.findById(id).
+    public reservaDTO findById(Long id){
+        Reserva r = repository.findById(id).
                 orElseThrow(()-> new RecursoNoEncontradoException("La reserva no fue encontrado"));
+        return mapper.toDto(r);
     }
 
-    public List<Reserva> findAll(){
-        return repository.findAll();
+    public List<reservaDTO> findAll(){
+        return repository.findAll().stream()
+                .map(mapper::toDto)
+                .toList();
     }
 
     public void deleteById(Long id){

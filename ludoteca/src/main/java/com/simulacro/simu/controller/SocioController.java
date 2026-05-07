@@ -1,5 +1,6 @@
 package com.simulacro.simu.controller;
 
+import com.simulacro.simu.Dtos.request.SocioRequest;
 import com.simulacro.simu.Service.socioService;
 import com.simulacro.simu.models.Socio;
 import com.simulacro.simu.validator.Group;
@@ -21,7 +22,7 @@ public class SocioController {
     private final socioService service;
 
     @PostMapping()
-    public ResponseEntity<Socio> save(@Valid @Validated({Group.Crear.class,Group.Actualizar.class})@RequestBody Socio s){
+    public ResponseEntity<Socio> save(@Valid @Validated({Group.Crear.class,Group.Actualizar.class})@RequestBody SocioRequest s){
         return  ResponseEntity.status(HttpStatus.CREATED).body(service.save(s));
     }
 
@@ -43,7 +44,7 @@ public class SocioController {
     }
 
     @PutMapping("/{id}")
-    public Socio update(@Validated(Group.Actualizar.class) @RequestBody Socio s,@RequestParam Long id){
+    public Socio update(@Validated(Group.Actualizar.class) @RequestBody SocioRequest s, @RequestParam Long id){
         return service.save(s);
     }
 }

@@ -17,7 +17,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
 
-        // Recorremos todos los errores de validación encontrados
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
@@ -39,7 +38,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleValidationExceptions(ReglaNegocioException ex) {
         Map<String, String> errors = new HashMap<>();
 
-        errors.put("error","Recurso no encontrado");
+        errors.put("error","Error en regla de negocio");
         errors.put("message", ex.getMessage());
         return  new ResponseEntity<>(errors,HttpStatus.BAD_REQUEST);
     }

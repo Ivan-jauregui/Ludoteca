@@ -21,22 +21,35 @@ public class Socio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull(groups = Group.Actualizar.class ,message = "El ID es requerido para actualizar")
     private Long id;
-    @NotBlank(groups = {Group.Actualizar.class,Group.Crear.class},message = "El nombre es requerido")
+
+    @Column(nullable = false)
     private String name;
+
     @Column(nullable = false,unique = true)
-    @NotNull(groups = {Group.Actualizar.class,Group.Crear.class},message = "El DNI es requerido")
     private String dni;
-    @Email(groups = {Group.Actualizar.class,Group.Crear.class})
+
     @Column(nullable = false,unique = true)
     private String email;
-    @Builder.Default
+
     @Column(updatable = false)
     private LocalDateTime fechaAlta=LocalDateTime.now();
-    @Builder.Default
-    @NotNull(groups = Group.Actualizar.class)
+
+    @PrePersist
+    public void prePersistDate() {
+        if (this.fechaAlta == null ) {
+            this.fechaAlta = LocalDateTime.now();
+        }
+    }
+
     private Boolean activo=true;
+
+    @PrePersist
+    public void prePersistStatus() {
+        if (this.activo == null ) {
+            this.activo = true;
+        }
+    }
 
     @OneToMany(mappedBy = "socio")
     private List<Reserva> reservas;

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class reservaDTO {
     private LocalDateTime fecha_reserva;
     private LocalDateTime fecha_retiro;
-    private Socio socio;
-    private Juego juego;
+    private socioDTO socio;
+    private JuegoDTO juego;
 
 }
